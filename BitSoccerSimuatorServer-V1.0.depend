@@ -1,0 +1,61 @@
+# depslib dependency file v1.0
+1734550661 source:/home/rob/Desktop/BitSoccerSimuatorServer-V1.0/gestioneConnessioni.c
+	"gestioneConnessioni.h"
+	"variabiliGlobali.h"
+	"squadra.h"
+
+1734443490 /home/rob/Desktop/BitSoccerSimuatorServer-V1.0/gestioneConnessioni.h
+	<json-c/json.h>
+
+1734552997 /home/rob/Desktop/BitSoccerSimuatorServer-V1.0/variabiliGlobali.h
+	"squadra.h"
+	"player.h"
+	"partita.h"
+	<pthread.h>
+
+1734628491 /home/rob/Desktop/BitSoccerSimuatorServer-V1.0/squadra.h
+	"player.h"
+	<pthread.h>
+
+1734611525 /home/rob/Desktop/BitSoccerSimuatorServer-V1.0/player.h
+
+1734441587 /home/rob/Desktop/BitSoccerSimuatorServer-V1.0/partita.h
+	"squadra.h"
+
+1734628412 source:/home/rob/Desktop/BitSoccerSimuatorServer-V1.0/main.c
+	<json-c/json.h>
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+	<sys/socket.h>
+	<sys/types.h>
+	<sys/wait.h>
+	<arpa/inet.h>
+	<unistd.h>
+	"squadra.h"
+	"player.h"
+	"partita.h"
+	"variabiliGlobali.h"
+	"gestioneConnessioni.h"
+
+1734611537 source:/home/rob/Desktop/BitSoccerSimuatorServer-V1.0/player.c
+	"player.h"
+	"variabiliGlobali.h"
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+	<arpa/inet.h>
+	<unistd.h>
+	<json-c/json.h>
+
+1734625521 source:/home/rob/Desktop/BitSoccerSimuatorServer-V1.0/squadra.c
+	"squadra.h"
+	"variabiliGlobali.h"
+	<pthread.h>
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+	<arpa/inet.h>
+	<unistd.h>
+	<json-c/json.h>
+
