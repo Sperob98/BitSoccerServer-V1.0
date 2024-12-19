@@ -128,6 +128,22 @@ void *gestione_richieste_client(void *arg){
                 pthread_cond_broadcast(&condListaSquadre);
                 printf("Avvertiti i client di eventuali aggiornamento del numero di partecianti\n");
 
+            }else if(strcmp(tipoRIchiesta,"cercaMatch")==0){
+
+                printf("Richiesta cerca match\n");
+
+                //Acquisizione mutex
+                pthread_mutex_lock(&mutexListaSquadre);
+                pthread_mutex_lock(&mutexPlayers);
+                pthread_mutex_lock(&mutexPartite);
+
+                //Cerca squadra avversaria e avvisa l client della ricerca match
+                cerca_squadra_match(client_message,client_sock);
+
+                //Rilascio mutex
+                pthread_mutex_unlock(&mutexListaSquadre);
+                pthread_mutex_unlock(&mutexPlayers);
+                pthread_mutex_unlock(&mutexPartite);
             }
         }
     }

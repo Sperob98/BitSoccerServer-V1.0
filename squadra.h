@@ -28,4 +28,6 @@ void aggiungi_richiesta_partecipazione_squadra(char *messaggio, int client_socke
 
 void aggiornamento_composizione_squadra(char *messaggio);
 
+void cerca_squadra_match(char *messaggio,int sockCapitano);
+
 #endif

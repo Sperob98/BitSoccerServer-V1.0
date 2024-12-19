@@ -13,7 +13,7 @@
 	"partita.h"
 	<pthread.h>
 
-1734628491 /home/rob/Desktop/BitSoccerSimuatorServer-V1.0/squadra.h
+1734637189 /home/rob/Desktop/BitSoccerSimuatorServer-V1.0/squadra.h
 	"player.h"
 	<pthread.h>
 
@@ -22,7 +22,7 @@
 1734441587 /home/rob/Desktop/BitSoccerSimuatorServer-V1.0/partita.h
 	"squadra.h"
 
-1734628412 source:/home/rob/Desktop/BitSoccerSimuatorServer-V1.0/main.c
+1734637848 source:/home/rob/Desktop/BitSoccerSimuatorServer-V1.0/main.c
 	<json-c/json.h>
 	<stdio.h>
 	<stdlib.h>
@@ -48,7 +48,7 @@
 	<unistd.h>
 	<json-c/json.h>
 
-1734625521 source:/home/rob/Desktop/BitSoccerSimuatorServer-V1.0/squadra.c
+1734638410 source:/home/rob/Desktop/BitSoccerSimuatorServer-V1.0/squadra.c
 	"squadra.h"
 	"variabiliGlobali.h"
 	<pthread.h>

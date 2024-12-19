@@ -19,11 +19,14 @@ char* serializza_array_squadre(){
 
             if(squadreInCostruzione[i] != NULL){
 
-                json_object *jobj = json_object_new_object();
-                json_object_object_add(jobj, "nomeSquadra", json_object_new_string(squadreInCostruzione[i]->nome_squadra));
-                json_object_object_add(jobj, "capitano", json_object_new_string(squadreInCostruzione[i]->capitano->nome_player));
-                json_object_object_add(jobj, "numeroPlayers", json_object_new_int(squadreInCostruzione[i]->numeroPlayers));
-                json_object_array_add(jarray, jobj);
+                if(squadreInCostruzione[i]->isPronto == 0){
+
+                    json_object *jobj = json_object_new_object();
+                    json_object_object_add(jobj, "nomeSquadra", json_object_new_string(squadreInCostruzione[i]->nome_squadra));
+                    json_object_object_add(jobj, "capitano", json_object_new_string(squadreInCostruzione[i]->capitano->nome_player));
+                    json_object_object_add(jobj, "numeroPlayers", json_object_new_int(squadreInCostruzione[i]->numeroPlayers));
+                    json_object_array_add(jarray, jobj);
+                }
             }
         }
 
@@ -136,6 +139,145 @@ void send_aggiornamento_composizione_squadra(char *nomeSquadra){
                     send(socket_player,"AggiornamentoComposizioneSquadra\n",strlen("AggiornamentoComposizioneSquadra\n"),0);
                     send(socket_player,oggettoDaInviare,strlen(oggettoDaInviare),0);
                     printf("Inviato l'oggetto: %s al player %s\n",oggettoDaInviare,squadreInCostruzione[indexSquadra]->players[k]->nome_player);
+                }
+            }
+        }
+    }
+}
+
+char *serializza_oggetto_info_match(int indexPartita){
+
+    // Creazione array JSON
+    struct json_object *json_array_playersA = json_object_new_array();
+    struct json_object *json_array_playersB = json_object_new_array();
+
+
+    //Inizializzi array JSON
+    for(int i=0; i<SIZE_ARRAY_PLAYER_PARTECIPANTI; i++){
+
+        char *playerA = partite[indexPartita]->squadra_A->players[i]->nome_player;
+        char *playerB = partite[indexPartita]->squadra_B->players[i]->nome_player;
+        json_object_array_add(json_array_playersA,json_object_new_string(playerA));
+        json_object_array_add(json_array_playersB,json_object_new_string(playerB));
+
+    }
+
+    //Creazione stignhe JSON
+    char *capitanoA = partite[indexPartita]->squadra_A->capitano->nome_player;
+    char *capitanoB = partite[indexPartita]->squadra_B->capitano->nome_player;
+    char *squadraA = partite[indexPartita]->squadra_A->nome_squadra;
+    char *squadraB = partite[indexPartita]->squadra_B->nome_squadra;
+
+    struct json_object *json_capitanoA = json_object_new_string(capitanoA);
+    struct json_object *json_capitanoB = json_object_new_string(capitanoB);
+    struct json_object *json_squadraA = json_object_new_string(squadraA);
+    struct json_object *json_squadraB = json_object_new_string(squadraB);
+    struct json_object *json_indexPartita = json_object_new_int(indexPartita);
+
+    //Creazione dell'oggetto principale che contiene i due array e le stringhe
+    struct json_object *root = json_object_new_object();
+    json_object_object_add(root, "playersA", json_array_playersA);
+    json_object_object_add(root, "playersB", json_array_playersB);
+    json_object_object_add(root, "capitanoA", json_capitanoA);
+    json_object_object_add(root, "capitanoB", json_capitanoB);
+    json_object_object_add(root, "squadraA", json_squadraA);
+    json_object_object_add(root, "squadraB", json_squadraB);
+    json_object_object_add(root, "indexPartita", json_indexPartita);
+
+    // Serializza l'oggetto JSON in una stringa
+    char *json_string = json_object_to_json_string(root);
+    char delimitatore[] = "\n";
+    strcat(json_string,delimitatore);
+
+    return json_string;
+}
+
+void avvisa_players_stato_match(int indexPartita, char *messaggio){
+
+    //CASO: AVVIO PARTITA
+    if(indexPartita > -1){
+
+        //serializza info partita
+        partita *partitaInAvvio = partite[indexPartita];
+        char *jsonInfoMatch = serializza_oggetto_info_match(indexPartita);
+
+        if(jsonInfoMatch != NULL){
+
+            //Avverti capitano squadra A
+            int clientCapitanoA = partitaInAvvio->squadra_A->capitano->socket;
+            send(clientCapitanoA,"rispostaMatch\n", strlen("rispostaMatch\n"),0);
+            send(clientCapitanoA, "avvioMatch\n", strlen("avvioMatch\n"),0);
+            send(clientCapitanoA,jsonInfoMatch,strlen(jsonInfoMatch),0);
+
+            printf("Avvisato il capitano %s della squadra %s dell'avvio del match\n",partitaInAvvio->squadra_A->capitano->nome_player,partitaInAvvio->squadra_A->nome_squadra);
+
+            //Avverti capitano squadra B
+            int clientCapitanoB = partitaInAvvio->squadra_B->capitano->socket;
+            send(clientCapitanoB,"rispostaMatch\n", strlen("rispostaMatch\n"),0);
+            send(clientCapitanoB, "avvioMatch\n", strlen("avvioMatch\n"),0);
+            send(clientCapitanoB,jsonInfoMatch,strlen(jsonInfoMatch),0);
+
+            printf("Avvisato il capitano %s della squadra %s dell'avvio del match\n",partitaInAvvio->squadra_B->capitano->nome_player,partitaInAvvio->squadra_B->nome_squadra);
+
+            //Avverti i player accettati
+            for(int i=0; i<SIZE_ARRAY_PLAYER_PARTECIPANTI; i++){
+
+                int playerA = partitaInAvvio->squadra_A->players[i]->socket;
+                int playerB = partitaInAvvio->squadra_B->players[i]->socket;
+
+
+                send(playerA,"rispostaMatch\n", strlen("rispostaMatch\n"),0);
+                send(playerA, "avvioMatch\n", strlen("avvioMatch\n"),0);
+                send(playerA,jsonInfoMatch,strlen(jsonInfoMatch),0);
+
+                printf("Avvisato il player %s della squadra %s dell'avvio del match\n",partitaInAvvio->squadra_A->players[i]->nome_player,partitaInAvvio->squadra_A->nome_squadra);
+
+                send(playerB,"rispostaMatch\n", strlen("rispostaMatch\n"),0);
+                send(playerB, "avvioMatch\n", strlen("avvioMatch\n"),0);
+                send(playerB,jsonInfoMatch,strlen(jsonInfoMatch),0);
+
+                printf("Avvisato il player %s della squadra %s dell'avvio del match\n",partitaInAvvio->squadra_B->players[i]->nome_player,partitaInAvvio->squadra_B->nome_squadra);
+
+            }
+        }
+
+    //CASO: ATTESA SQUADRA AVVERSARIA
+    }else if(indexPartita == -1){
+
+        //Deserializzazione del messaggio per estrarre la squdra che ha chiesto il match
+        struct json_object *parsed_json;
+        parsed_json = json_tokener_parse(messaggio);
+
+        json_object *nomeSquadraJSON;
+
+        json_object_object_get_ex(parsed_json, "squadra", &nomeSquadraJSON);
+        char *nomeSquadra = json_object_get_string(nomeSquadraJSON);
+
+        //Cerca squadra nell'array
+        int i;
+        for(i=0; i<SIZE_ARRAY_TEAMS;i++){
+
+            if(squadreInCostruzione[i] != NULL){
+
+                if(strcmp(squadreInCostruzione[i]->nome_squadra,nomeSquadra) == 0){
+
+                    //Avverti capitano
+                    int clientCapitano = squadreInCostruzione[i]->capitano->socket;
+                    send(clientCapitano,"rispostaMatch\n", strlen("rispostaMatch\n"),0);
+                    send(clientCapitano, "attesaMatch\n", strlen("attesaMatch\n"),0);
+
+                    printf("Avvisato il capitano %s della squadra %s di in attesa di squadra avversaria\n",squadreInCostruzione[i]->capitano->nome_player,squadreInCostruzione[i]->nome_squadra);
+
+                    //Avverti i player
+                    for(int j=0; j<SIZE_ARRAY_PLAYER_PARTECIPANTI; j++){
+
+                        int clientPlayer = squadreInCostruzione[i]->players[j]->socket;
+                        send(clientPlayer,"rispostaMatch\n", strlen("rispostaMatch\n"),0);
+                        send(clientPlayer, "attesaMatch\n", strlen("attesaMatch\n"),0);
+
+                        printf("Avvisato il player %s della squadra %s di in attesa di squadra avversaria\n",squadreInCostruzione[i]->players[j]->nome_player,squadreInCostruzione[i]->nome_squadra);
+
+                    }
                 }
             }
         }
@@ -470,5 +612,127 @@ void aggiornamento_composizione_squadra(char *messaggio){
 
         //Avverti i client della squadra dell'aggiornamento
         send_aggiornamento_composizione_squadra(json_object_get_string(nomeSquadraJSON));
+    }
+}
+
+void cerca_squadra_match(char *messaggio,int sockCapitano){
+
+    //Deserializzazione del messaggio
+    struct json_object *parsed_json;
+    parsed_json = json_tokener_parse(messaggio);
+
+    json_object *nomeSquadraJSON;
+
+    json_object_object_get_ex(parsed_json, "squadra", &nomeSquadraJSON);
+
+    if(json_object_get_string(nomeSquadraJSON) != NULL){
+
+        char *nomesquadra = json_object_get_string(nomeSquadraJSON);
+
+        //Cerca l'indice della squadra che ha chiesto il match nell'array delle squadreInCostruzione
+        int indexSquadraCheHaChiestoIlMatch;
+        for(indexSquadraCheHaChiestoIlMatch=0; indexSquadraCheHaChiestoIlMatch<SIZE_ARRAY_TEAMS; indexSquadraCheHaChiestoIlMatch++){
+
+            if(squadreInCostruzione[indexSquadraCheHaChiestoIlMatch] != NULL){
+
+                int risultatoCmp = strcmp(squadreInCostruzione[indexSquadraCheHaChiestoIlMatch]->nome_squadra,nomesquadra);
+                if(risultatoCmp == 0) break;
+            }
+        }
+
+        //Caso fallimento nella ricerca della squadra
+        if(indexSquadraCheHaChiestoIlMatch >= SIZE_ARRAY_TEAMS){
+
+            printf("Stato richiesta match fallito\n");
+
+            //Avverti capitano del fallimento della richiesta
+            send(sockCapitano,"rispostaAlCapitano\n", strlen("rispostaAlCapitano\n"),0);
+            send(sockCapitano,"ko\n", strlen("ko\n"),0);
+
+            return;
+        }
+
+        //Cerca nell'array delle squadre una squadra pronta (diversa dalla squadra che ha chiesto il match)
+        int matchTrovato = 0;
+        int indexSquadrePronte;
+        for(indexSquadrePronte=0; indexSquadrePronte<SIZE_ARRAY_TEAMS; indexSquadrePronte++){
+
+            if(squadreInCostruzione[indexSquadrePronte] != NULL){
+
+                if( squadreInCostruzione[indexSquadrePronte]->isPronto != 0){
+
+                    matchTrovato = 1;
+                    break;
+                }
+            }
+        }
+
+        //Se match trovato aggiungi partita e libera l'array squadreIncostruzione
+        if(matchTrovato == 1){
+
+            //Aggiunge partita nell'array delle partite
+            int i;
+            for(i=0; i<SIZE_ARRAY_PARTITE; i++){
+
+                if(partite[i] == NULL){
+
+                    partite[i] = malloc(sizeof(partita));
+                    if(partite[i] != NULL){
+
+                        partite[i]->squadra_A = squadreInCostruzione[indexSquadraCheHaChiestoIlMatch];
+                        partite[i]->squadra_B = squadreInCostruzione[indexSquadrePronte];
+                        strcpy(partite[i]->inizioTurno,"null");
+                        partite[i]->finePartita = 0;
+                        partite[i]->inizioPartita = 0;
+                        printf("Aggiunta partita: %s vs %s\n",nomesquadra,squadreInCostruzione[indexSquadraCheHaChiestoIlMatch]->nome_squadra);
+
+                        //Libera gli array
+                        squadreInCostruzione[indexSquadraCheHaChiestoIlMatch] = NULL;
+                        squadreInCostruzione[indexSquadrePronte] = NULL;
+
+                        //Avverti il capitano che la richiesta ha avuto successo
+                        send(sockCapitano,"rispostaAlCapitano\n", strlen("rispostaAlCapitano\n"),0);
+                        send(sockCapitano,"ok\n", strlen("ok\n"),0);
+
+                        //Avvisa stato match
+                        avvisa_players_stato_match(i,messaggio);
+                        return;
+                    }
+                }else{ //malloc fallita
+
+                    //Avverti il capitano che la richiesta è fallita
+                    send(sockCapitano,"rispostaAlCapitano\n", strlen("rispostaAlCapitano\n"),0);
+                    send(sockCapitano,"ko\n", strlen("ko\n"),0);
+
+                    printf("Stato richiesta match fallito\n");
+
+                    return;
+                }
+            }
+
+            if(i>SIZE_ARRAY_PARTITE){ //Fallimento caso array partite pieno
+
+                //Avverti il capitano che la richiesta è fallita
+                send(sockCapitano,"rispostaAlCapitano\n", strlen("rispostaAlCapitano\n"),0);
+                send(sockCapitano,"ko\n", strlen("ko\n"),0);
+
+                printf("Stato richiesta match fallito\n");
+
+                return;
+            }
+
+        }else{ //Setta squadra pronta per avviare un match non appena è pronta un altra squadra
+
+            squadreInCostruzione[indexSquadraCheHaChiestoIlMatch]->isPronto = 1;
+
+            printf("Aggiunta la squadra %s in attesa di match\n",nomesquadra);
+
+            //Avverti il client che la richiesta ha avuto successo
+            send(sockCapitano,"rispostaAlCapitano\n", strlen("rispostaAlCapitano\n"),0);
+            send(sockCapitano,"ok\n", strlen("ok\n"),0);
+
+            avvisa_players_stato_match(-1,messaggio);
+            return;
+        }
     }
 }
