@@ -15,4 +15,23 @@ typedef struct{
 
 }partita;
 
+typedef struct{
+
+    int indexPartita;
+    char player_name[SIZE_NAME_PLAYER];
+
+}argomentiThreadInfortunio;
+
+typedef struct{
+
+    int indexPartita;
+    int timeP;
+    char player[SIZE_NAME_PLAYER];
+
+}argomentiThreadPenalizzazione;
+
+int get_index_partita(char *messaggio);
+
+void assegna_turno_iniziale_e_avvia_match(char *messaggio);
+
 #endif

@@ -40,7 +40,13 @@ void *gestione_richieste_client(void *arg){
         //Punto di inizio dove vengono ricevuti i messaggi dal client
         if (recv(client_sock, client_message, sizeof(client_message), 0) < 0) { //Gestione disconessione client
 
+                pthread_mutex_lock(&mutexPlayers);
+                pthread_mutex_lock(&mutexListaSquadre);
+
                 printf("Ricenzione di un messaggio di un client fallito, inizio operazione disconessione player relativo al client socket\n");
+
+                pthread_mutex_unlock(&mutexPlayers);
+                pthread_mutex_unlock(&mutexListaSquadre);
 
                 pthread_exit(NULL);
             }
@@ -144,6 +150,72 @@ void *gestione_richieste_client(void *arg){
                 pthread_mutex_unlock(&mutexListaSquadre);
                 pthread_mutex_unlock(&mutexPlayers);
                 pthread_mutex_unlock(&mutexPartite);
+
+            }else if(strcmp(tipoRIchiesta,"inizioTurno")==0){
+
+                printf("Richiesta di inizio turno di un match\n");
+
+                int indexPartita = get_index_partita(client_message);
+
+                if(indexPartita >= 0 && indexPartita < SIZE_ARRAY_PARTITE){
+
+                    if( partite[indexPartita] != NULL){
+
+                        pthread_mutex_lock(&mutexPartite);
+
+                        partita *match = partite[indexPartita];
+
+                        //Avvia il processo di nuova partita una sola volta
+                        if(match->inizioPartita != 1){
+
+                            match->inizioPartita = 1;
+
+                            pthread_mutex_unlock(&mutexPartite);
+
+                            pid_t pid = fork();
+
+                            if(pid < 0){
+
+                                printf("Errore creazione processo partita\n");
+
+                            }else if(pid == 0){
+
+                                printf("Creato un nuovo processo per una nuova partita\n");
+
+                                //Inizializza il seed con l'ora corrente
+                                srand(time(NULL));
+
+                                assegna_turno_iniziale_e_avvia_match(client_message);
+
+                                exit(0);
+
+                            }else{
+
+                                /*int status;
+                                waitpid(pid,&status,0);
+
+                                if(WIFEXITED(status)){
+
+                                    int exit_status = WEXITSTATUS(status);
+                                    printf("Terminano con %d\n",exit_status);
+
+                                }else if(WIFSIGNALED(status)) {
+
+                                    int term = WTERMSIG(status);
+                                    printf("Terminato a causa del segnale: %d\n",term);
+
+                                }*/
+
+                                free(match);
+                                partite[indexPartita] = NULL;
+                            }
+
+                        }else{
+
+                            pthread_mutex_unlock(&mutexPartite);
+                        }
+                    }
+                }
             }
         }
     }
