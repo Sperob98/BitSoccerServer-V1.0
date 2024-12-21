@@ -411,7 +411,10 @@ void *thread_send_lista_squadre_client(void* client_socket){
     int indexPlayer = 0;
     for(indexPlayer=0;indexPlayer<SIZE_ARRAY_PLAYERS;indexPlayer++){
 
-        if(playersConnessi[indexPlayer]->socket==client) break;
+        if(playersConnessi[indexPlayer]!=NULL){
+
+            if(playersConnessi[indexPlayer]->socket==client) break;
+        }
     }
 
     while(1){

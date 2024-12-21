@@ -35,26 +35,34 @@ void *gestione_richieste_client(void *arg){
     //Buff per i messaggi recevuti dal client
     char client_message[8192];
 
+    //pid del processo padre, ce lo salviamo perché il processo padre deve essere l'unico a gestire le richieste
+    pid_t processoPadre = getpid();
+
     while(1){
 
         //Punto di inizio dove vengono ricevuti i messaggi dal client
         if (recv(client_sock, client_message, sizeof(client_message), 0) < 0) { //Gestione disconessione client
 
-                pthread_mutex_lock(&mutexPlayers);
-                pthread_mutex_lock(&mutexListaSquadre);
+                if(getpid()==processoPadre){
 
-                printf("Ricenzione di un messaggio di un client fallito, inizio operazione disconessione player relativo al client socket\n");
+                    pthread_mutex_lock(&mutexPlayers);
+                    pthread_mutex_lock(&mutexListaSquadre);
 
-                pthread_mutex_unlock(&mutexPlayers);
-                pthread_mutex_unlock(&mutexListaSquadre);
+                    printf("Ricenzione di un messaggio di un client fallito, inizio operazione disconessione player relativo al client socket\n");
 
-                pthread_exit(NULL);
+                    gestione_disconessione_client(client_sock);
+
+                    pthread_mutex_unlock(&mutexPlayers);
+                    pthread_mutex_unlock(&mutexListaSquadre);
+
+                    pthread_exit(NULL);
+                }
             }
 
         //Decodifica del tipo di richiesta del client
         char *tipoRIchiesta = get_tipo_richiesta(client_message);
 
-        if(tipoRIchiesta != NULL){
+        if(tipoRIchiesta != NULL && getpid()==processoPadre){
 
             if(strcmp(tipoRIchiesta,"nuovoUtente")==0){
 
@@ -116,6 +124,7 @@ void *gestione_richieste_client(void *arg){
                 //Rilascio mutex
                 pthread_mutex_unlock(&mutexListaSquadre);
                 pthread_mutex_unlock(&mutexPlayers);
+
             }else if(strcmp(tipoRIchiesta,"decisioneCapitano")==0){
 
                 printf("Richiesta decisione capitano\n");

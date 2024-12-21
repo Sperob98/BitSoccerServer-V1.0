@@ -2,34 +2,9 @@
 <CodeBlocks_layout_file>
 	<FileVersion major="1" minor="0" />
 	<ActiveTarget name="Debug" />
-	<File name="player.c" open="0" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="gestioneConnessioni.c" open="0" top="0" tabpos="4" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="1471" topLine="24" />
-		</Cursor>
-	</File>
-	<File name="player.h" open="0" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="210" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="squadra.c" open="0" top="0" tabpos="1" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="682" topLine="10" />
-		</Cursor>
-		<Folding>
-			<Collapse line="42" />
-			<Collapse line="91" />
-			<Collapse line="147" />
-			<Collapse line="194" />
-			<Collapse line="288" />
-			<Collapse line="447" />
-			<Collapse line="514" />
-			<Collapse line="617" />
-		</Folding>
-	</File>
-	<File name="partita.h" open="1" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="480" topLine="10" />
+			<Cursor1 position="3661" topLine="90" />
 		</Cursor>
 	</File>
 	<File name="squadra.h" open="0" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
@@ -37,14 +12,25 @@
 			<Cursor1 position="741" topLine="11" />
 		</Cursor>
 	</File>
-	<File name="gestioneConnessioni.c" open="0" top="0" tabpos="4" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="squadra.c" open="0" top="0" tabpos="1" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="502" topLine="8" />
+			<Cursor1 position="16979" topLine="35" />
 		</Cursor>
+		<Folding>
+			<Collapse line="11" />
+			<Collapse line="42" />
+			<Collapse line="91" />
+			<Collapse line="147" />
+			<Collapse line="194" />
+			<Collapse line="288" />
+			<Collapse line="450" />
+			<Collapse line="517" />
+			<Collapse line="620" />
+		</Folding>
 	</File>
-	<File name="main.c" open="1" top="1" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="gestioneConnessioni.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="6710" topLine="174" />
+			<Cursor1 position="193" topLine="0" />
 		</Cursor>
 	</File>
 	<File name="variabiliGlobali.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
@@ -52,14 +38,19 @@
 			<Cursor1 position="447" topLine="1" />
 		</Cursor>
 	</File>
-	<File name="gestioneConnessioni.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="player.c" open="0" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="142" topLine="0" />
+			<Cursor1 position="1471" topLine="24" />
 		</Cursor>
 	</File>
-	<File name="partita.c" open="1" top="0" tabpos="1" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="main.c" open="0" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="35712" topLine="184" />
+			<Cursor1 position="2339" topLine="90" />
+		</Cursor>
+	</File>
+	<File name="partita.c" open="0" top="0" tabpos="1" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="35712" topLine="13" />
 		</Cursor>
 		<Folding>
 			<Collapse line="11" />
@@ -74,6 +65,19 @@
 			<Collapse line="341" />
 			<Collapse line="463" />
 			<Collapse line="672" />
+			<Collapse line="803" />
+			<Collapse line="994" />
+			<Collapse line="1009" />
 		</Folding>
+	</File>
+	<File name="partita.h" open="0" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="480" topLine="9" />
+		</Cursor>
+	</File>
+	<File name="player.h" open="0" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="210" topLine="0" />
+		</Cursor>
 	</File>
 </CodeBlocks_layout_file>

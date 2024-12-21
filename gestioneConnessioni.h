@@ -5,4 +5,6 @@
 
 char *get_tipo_richiesta(char *messaggio);
 
+void gestione_disconessione_client(int socket_disconessa);
+
 #endif
