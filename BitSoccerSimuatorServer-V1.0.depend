@@ -59,7 +59,7 @@
 	<unistd.h>
 	<json-c/json.h>
 
-1734716349 source:/home/rob/Desktop/BitSoccerSimuatorServer-V1.0/partita.c
+1734990042 source:/home/rob/Desktop/BitSoccerSimuatorServer-V1.0/partita.c
 	"partita.h"
 	"variabiliGlobali.h"
 	"player.h"
@@ -68,4 +68,5 @@
 	<stdlib.h>
 	<time.h>
 	<pthread.h>
+	<string.h>
 

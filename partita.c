@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <pthread.h>
+#include <string.h>
 
 ////////////////////////////////////Funzioni interne////////////////////////////////////////////////////////
 
@@ -56,11 +57,11 @@ int get_squadra_from_player(char *player, int indexPartita){
 
                     if(strcmp(player,match->squadra_B->players[i]->nome_player) == 0) return 1;
                 }
-
-                return -1;
             }
         }
     }
+
+    return -1;
 }
 
 int get_index_player(char *player, int indexPartita){
@@ -83,11 +84,11 @@ int get_index_player(char *player, int indexPartita){
 
                     if(strcmp(player,match->squadra_B->players[i]->nome_player) == 0) return i;
                 }
-
-                return -1;
             }
         }
     }
+
+    return -1;
 }
 
 void *avvia_timer(void *arg){
@@ -101,8 +102,6 @@ void *avvia_timer(void *arg){
             partita *match = partite[indexPartita];
 
             json_object *jobj;
-
-            char *messaggioJSON;
 
             for(int i=0; i<5; i++){
 
@@ -118,8 +117,10 @@ void *avvia_timer(void *arg){
                         json_object_object_add(jobj, "countDown", json_object_new_string("4m"));
                         const char *json_str = json_object_to_json_string(jobj);
 
-                        messaggioJSON = strdup(json_str); // Copia la stringa JSON per restituirla
-                        json_object_put(jobj); // Dealloca l'oggetto JSON
+                        char *tmp = strdup(json_str); // Copia la stringa JSON per restituirla
+                        int sizeMSG = strlen(tmp) + 2;
+                        char *messaggioJSON = malloc(sizeof(char)*sizeMSG);
+                        strcpy(messaggioJSON,tmp);
                         strcat(messaggioJSON,"\n");
 
                         send_evento_partecipanti_match(messaggioJSON,indexPartita);
@@ -134,11 +135,13 @@ void *avvia_timer(void *arg){
                         json_object_object_add(jobj, "countDown", json_object_new_string("3m"));
                         const char *json_str1 = json_object_to_json_string(jobj);
 
-                        messaggioJSON = strdup(json_str1); // Copia la stringa JSON per restituirla
-                        json_object_put(jobj); // Dealloca l'oggetto JSON
-                        strcat(messaggioJSON,"\n");
+                        char *tmp1 = strdup(json_str1); // Copia la stringa JSON per restituirla
+                        int sizeMSG1 = strlen(tmp1) + 2;
+                        char *messaggioJSON1 = malloc(sizeof(char)*sizeMSG1);
+                        strcpy(messaggioJSON1,tmp1);
+                        strcat(messaggioJSON1,"\n");
 
-                        send_evento_partecipanti_match(messaggioJSON,indexPartita);
+                        send_evento_partecipanti_match(messaggioJSON1,indexPartita);
 
                         break;
 
@@ -150,11 +153,13 @@ void *avvia_timer(void *arg){
                         json_object_object_add(jobj, "countDown", json_object_new_string("2m"));
                         const char *json_str2 = json_object_to_json_string(jobj);
 
-                        messaggioJSON = strdup(json_str2); // Copia la stringa JSON per restituirla
-                        json_object_put(jobj); // Dealloca l'oggetto JSON
-                        strcat(messaggioJSON,"\n");
+                        char *tmp2 = strdup(json_str2); // Copia la stringa JSON per restituirla
+                        int sizeMSG2 = strlen(tmp2) + 2;
+                        char *messaggioJSON2 = malloc(sizeof(char)*sizeMSG2);
+                        strcpy(messaggioJSON2,tmp2);
+                        strcat(messaggioJSON2,"\n");
 
-                        send_evento_partecipanti_match(messaggioJSON,indexPartita);
+                        send_evento_partecipanti_match(messaggioJSON2,indexPartita);
 
                         break;
 
@@ -166,11 +171,13 @@ void *avvia_timer(void *arg){
                         json_object_object_add(jobj, "countDown", json_object_new_string("1m"));
                         const char *json_str3 = json_object_to_json_string(jobj);
 
-                        messaggioJSON = strdup(json_str3); // Copia la stringa JSON per restituirla
-                        json_object_put(jobj); // Dealloca l'oggetto JSON
-                        strcat(messaggioJSON,"\n");
+                        char *tmp3 = strdup(json_str3); // Copia la stringa JSON per restituirla
+                        int sizeMSG3 = strlen(tmp3) + 2;
+                        char *messaggioJSON3 = malloc(sizeof(char)*sizeMSG3);
+                        strcpy(messaggioJSON3,tmp3);
+                        strcat(messaggioJSON3,"\n");
 
-                        send_evento_partecipanti_match(messaggioJSON,indexPartita);
+                        send_evento_partecipanti_match(messaggioJSON3,indexPartita);
 
                         break;
                 }
@@ -237,8 +244,10 @@ void tira(char *player, int indexPartita, int *scoreA, int *scoreB){
 
 
         const char *json_str = json_object_to_json_string(jobj);
-        char *messaggioJSON = strdup(json_str); // Copia la stringa JSON per restituirla
-        json_object_put(jobj); // Dealloca l'oggetto JSON
+        char *tmp = strdup(json_str); // Copia la stringa JSON per restituirla
+        int sizeMSG = strlen(tmp) + 2;
+        char *messaggioJSON = malloc(sizeof(char)*sizeMSG);
+        strcpy(messaggioJSON,tmp);
         strcat(messaggioJSON,"\n");
 
         send_evento_partecipanti_match(messaggioJSON,indexPartita);
@@ -256,8 +265,10 @@ void tira(char *player, int indexPartita, int *scoreA, int *scoreB){
 
 
         const char *json_str = json_object_to_json_string(jobj);
-        char *messaggioJSON = strdup(json_str); // Copia la stringa JSON per restituirla
-        json_object_put(jobj); // Dealloca l'oggetto JSON
+        char *tmp = strdup(json_str); // Copia la stringa JSON per restituirla
+        int sizeMSG = strlen(tmp) + 2;
+        char *messaggioJSON = malloc(sizeof(char)*sizeMSG);
+        strcpy(messaggioJSON,tmp);
         strcat(messaggioJSON,"\n");
 
         send_evento_partecipanti_match(messaggioJSON,indexPartita);
@@ -312,8 +323,10 @@ void dribbling(char *player,int indexPartita, int *scoreA, int *scoreB){
         json_object_object_add(jobj, "turnoPlayer", json_object_new_string(player));
 
         const char *json_str = json_object_to_json_string(jobj);
-        char *messaggioJSON = strdup(json_str); // Copia la stringa JSON per restituirla
-        json_object_put(jobj); // Dealloca l'oggetto JSON
+        char *tmp = strdup(json_str); // Copia la stringa JSON per restituirla
+        int sizeMSG = strlen(tmp) + 2;
+        char *messaggioJSON = malloc(sizeof(char)*sizeMSG);
+        strcpy(messaggioJSON,tmp);
         strcat(messaggioJSON,"\n");
 
         send_evento_partecipanti_match(messaggioJSON,indexPartita);
@@ -329,8 +342,10 @@ void dribbling(char *player,int indexPartita, int *scoreA, int *scoreB){
         json_object_object_add(jobj, "turnoPlayer", json_object_new_string(player));
 
         const char *json_str = json_object_to_json_string(jobj);
-        char *messaggioJSON = strdup(json_str); // Copia la stringa JSON per restituirla
-        json_object_put(jobj); // Dealloca l'oggetto JSON
+        char *tmp = strdup(json_str); // Copia la stringa JSON per restituirla
+        int sizeMSG = strlen(tmp) + 2;
+        char *messaggioJSON = malloc(sizeof(char)*sizeMSG);
+        strcpy(messaggioJSON,tmp);
         strcat(messaggioJSON,"\n");
 
         send_evento_partecipanti_match(messaggioJSON,indexPartita);
@@ -368,13 +383,16 @@ void *penalizzazione(void *infoThread){
         json_object_object_add(jobj, "playerRitornato", json_object_new_string(playerString));
         const char *json_str = json_object_to_json_string(jobj);
 
-        char *messaggioJSON = strdup(json_str); // Copia la stringa JSON per restituirla
-        json_object_put(jobj); // Dealloca l'oggetto JSON
+        char *tmp = strdup(json_str); // Copia la stringa JSON per restituirla
+        int sizeMSG = strlen(tmp) + 2;
+        char *messaggioJSON = malloc(sizeof(char)*sizeMSG);
+        strcpy(messaggioJSON,tmp);
         strcat(messaggioJSON,"\n");
 
         send_evento_partecipanti_match(messaggioJSON,indexPartita);
 
-        return;
+        pthread_exit((void*)1);
+
     }
 
      if(strcmp(playerString,match->squadra_B->capitano->nome_player) == 0){
@@ -394,13 +412,16 @@ void *penalizzazione(void *infoThread){
         json_object_object_add(jobj, "playerRitornato", json_object_new_string(playerString));
         const char *json_str = json_object_to_json_string(jobj);
 
-        char *messaggioJSON = strdup(json_str); // Copia la stringa JSON per restituirla
-        json_object_put(jobj); // Dealloca l'oggetto JSON
+        char *tmp = strdup(json_str); // Copia la stringa JSON per restituirla
+        int sizeMSG = strlen(tmp) + 2;
+        char *messaggioJSON = malloc(sizeof(char)*sizeMSG);
+        strcpy(messaggioJSON,tmp);
         strcat(messaggioJSON,"\n");
 
         send_evento_partecipanti_match(messaggioJSON,indexPartita);
 
-        return;
+        pthread_exit((void*)2);
+
     }
 
     for(int i=0; i<SIZE_ARRAY_PLAYER_PARTECIPANTI; i++){
@@ -423,13 +444,16 @@ void *penalizzazione(void *infoThread){
             json_object_object_add(jobj, "playerRitornato", json_object_new_string(playerString));
             const char *json_str = json_object_to_json_string(jobj);
 
-            char *messaggioJSON = strdup(json_str); // Copia la stringa JSON per restituirla
-            json_object_put(jobj); // Dealloca l'oggetto JSON
+            char *tmp = strdup(json_str); // Copia la stringa JSON per restituirla
+            int sizeMSG = strlen(tmp) + 2;
+            char *messaggioJSON = malloc(sizeof(char)*sizeMSG);
+            strcpy(messaggioJSON,tmp);
             strcat(messaggioJSON,"\n");
 
             send_evento_partecipanti_match(messaggioJSON,indexPartita);
 
-            return;
+            pthread_exit((void*)3);
+
         }
 
          if(strcmp(playerString,match->squadra_B->players[i]->nome_player) == 0){
@@ -449,13 +473,16 @@ void *penalizzazione(void *infoThread){
             json_object_object_add(jobj, "playerRitornato", json_object_new_string(playerString));
             const char *json_str = json_object_to_json_string(jobj);
 
-            char *messaggioJSON = strdup(json_str); // Copia la stringa JSON per restituirla
-            json_object_put(jobj); // Dealloca l'oggetto JSON
+            char *tmp = strdup(json_str); // Copia la stringa JSON per restituirla
+            int sizeMSG = strlen(tmp) + 2;
+            char *messaggioJSON = malloc(sizeof(char)*sizeMSG);
+            strcpy(messaggioJSON,tmp);
             strcat(messaggioJSON,"\n");
 
             send_evento_partecipanti_match(messaggioJSON,indexPartita);
 
-            return;
+            pthread_exit((void*)4);
+
         }
     }
 
@@ -471,7 +498,7 @@ void *infortunio(void *infoThread){
     partita *match = partite[indexPartita];
     player *playerInfortunato = NULL;
 
-    printf("Thread infotunio creato: player infortunato %s\n",playerInfortunato);
+    printf("Thread infotunio creato: player infortunato %s\n",playerInfortunatoString);
 
     //Cerca player infortunato
     char *capitanoA = match->squadra_A->capitano->nome_player;
@@ -511,7 +538,7 @@ void *infortunio(void *infoThread){
     random_number++;
     int secondiInfortunio = random_number*60; //converti in secondi
 
-    printf("%Minuti indfrtunio di %s: %d minuti\n",playerInfortunatoString,random_number);
+    printf("Minuti infortunio di %s: %d minuti\n",playerInfortunatoString,random_number);
 
     //Ottiene la squadra del giocatore infortunato per penalizzare la squadra avversaria
     int squadra = get_squadra_from_player(playerInfortunatoString,indexPartita);
@@ -520,6 +547,7 @@ void *infortunio(void *infoThread){
     int random_time_p = (rand() % 4) + 1;
     player *playerPenalizzato = NULL;
     int trovato_player_da_penalizzare = 0;
+    pthread_t thread;
 
     pthread_mutex_lock(&mutexPartite);
 
@@ -540,14 +568,13 @@ void *infortunio(void *infoThread){
                     printf("Fallo commesso da %s penalizzato per %d min\n",playerPenalizzato->nome_player,random_time_p);
 
                     //Crea thread penalizzazione
-                    pthread_t thread;
                     argomentiThreadPenalizzazione *infoThreadPenalizzazione = malloc(sizeof(argomentiThreadPenalizzazione));
                     strcpy(infoThreadPenalizzazione->player,playerPenalizzato->nome_player);
                     infoThreadPenalizzazione->indexPartita = indexPartita;
                     infoThreadPenalizzazione->timeP = random_time_p;
                     if (pthread_create(&thread, NULL, penalizzazione, (void*)infoThreadPenalizzazione) != 0) {
 
-                        printf(stderr, "Errore nella creazione del thread infortunio\n");
+                        printf("Errore nella creazione del thread infortunio\n");
                     }
 
                     trovato_player_da_penalizzare = 1;
@@ -563,7 +590,6 @@ void *infortunio(void *infoThread){
                     printf("Fallo commesso da %s penalizzato per %d min\n",playerPenalizzato->nome_player,random_time_p);
 
                     //Crea thread penalizzazione
-                    pthread_t thread;
                     argomentiThreadPenalizzazione *infoThreadPenalizzazione = malloc(sizeof(argomentiThreadPenalizzazione));
                     strcpy(infoThreadPenalizzazione->player,playerPenalizzato->nome_player);
                     infoThreadPenalizzazione->indexPartita = indexPartita;
@@ -589,7 +615,6 @@ void *infortunio(void *infoThread){
                     printf("Fallo commesso da %s penalizzato per %d min\n",playerPenalizzato->nome_player,random_time_p);
 
                     //Crea thread penalizzazione
-                    pthread_t thread;
                     argomentiThreadPenalizzazione *infoThreadPenalizzazione = malloc(sizeof(argomentiThreadPenalizzazione));
                     strcpy(infoThreadPenalizzazione->player,playerPenalizzato->nome_player);
                     infoThreadPenalizzazione->indexPartita = indexPartita;
@@ -612,7 +637,6 @@ void *infortunio(void *infoThread){
                     printf("Fallo commesso da %s penalizzato per %d min\n",playerPenalizzato->nome_player,random_time_p);
 
                     //Crea thread penalizzazione
-                    pthread_t thread;
                     argomentiThreadPenalizzazione *infoThreadPenalizzazione = malloc(sizeof(argomentiThreadPenalizzazione));
                     strcpy(infoThreadPenalizzazione->player,playerPenalizzato->nome_player);
                     infoThreadPenalizzazione->indexPartita = indexPartita;
@@ -642,8 +666,10 @@ void *infortunio(void *infoThread){
     json_object_object_add(jobj, "minutiP", json_object_new_int(random_time_p));
 
     const char *json_str = json_object_to_json_string(jobj);
-    char *messaggioJSON = strdup(json_str); // Copia la stringa JSON per restituirla
-    json_object_put(jobj); // Dealloca l'oggetto JSON
+    char *tmp = strdup(json_str); // Copia la stringa JSON per restituirla
+    int sizeMSG = strlen(tmp) + 2;
+    char *messaggioJSON = malloc(sizeof(char)*sizeMSG);
+    strcpy(messaggioJSON,tmp);
     strcat(messaggioJSON,"\n");
 
     send_evento_partecipanti_match(messaggioJSON,indexPartita);
@@ -663,11 +689,19 @@ void *infortunio(void *infoThread){
     json_object_object_add(jobj2, "turnoPlayer", json_object_new_string(playerInfortunatoString));
 
     const char *json_str2 = json_object_to_json_string(jobj2);
-    char *messaggioJSON2 = strdup(json_str2); // Copia la stringa JSON per restituirla
-    json_object_put(jobj2); // Dealloca l'oggetto JSON
+    char *tmp2 = strdup(json_str2); // Copia la stringa JSON per restituirla
+    int sizeMSG2 = strlen(tmp2) + 2;
+    char *messaggioJSON2 = malloc(sizeof(char)*sizeMSG2);
+    strcpy(messaggioJSON2,tmp2);
     strcat(messaggioJSON2,"\n");
+    json_object_put(jobj2); // Dealloca l'oggetto JSON
 
     send_evento_partecipanti_match(messaggioJSON2,indexPartita);
+
+    void *status;
+    pthread_join(thread,&status);
+
+    printf("Thread penalizzazione terminato con stato: %ld\n",(long)status);
 }
 
 char *assegna_turno(int turnoSquadraAttuale, int indexPartita, int *indiceTurnoA,int *indiceTurnoB){
@@ -693,16 +727,15 @@ char *assegna_turno(int turnoSquadraAttuale, int indexPartita, int *indiceTurnoA
 
                     turnoPlayer = playerInfo->nome_player;
 
-                    turnoPlayer = malloc(SIZE_NAME_PLAYER * sizeof(char));
-                    strcpy(turnoPlayer,playerInfo->nome_player);
-
                     //Costruisci messaggio e invia messaggio ai partecipanti
                     json_object *jobj = json_object_new_object();
                     json_object_object_add(jobj, "tipoEvento", json_object_new_string("assegnazioneTurno"));
                     json_object_object_add(jobj, "turnoPlayer", json_object_new_string(turnoPlayer));
                     const char *json_str = json_object_to_json_string(jobj);
-                    char *messaggioJSON = strdup(json_str); // Copia la stringa JSON per restituirla
-                    json_object_put(jobj); // Dealloca l'oggetto JSON
+                    char *tmp = strdup(json_str); // Copia la stringa JSON per restituirla
+                    int sizeMSG = strlen(tmp) + 2;
+                    char *messaggioJSON = malloc(sizeof(char)*sizeMSG);
+                    strcpy(messaggioJSON,tmp);
                     strcat(messaggioJSON,"\n");
 
                     send_evento_partecipanti_match(messaggioJSON,indexPartita);
@@ -723,8 +756,10 @@ char *assegna_turno(int turnoSquadraAttuale, int indexPartita, int *indiceTurnoA
                     json_object_object_add(jobj, "tipoEvento", json_object_new_string("assegnazioneTurno"));
                     json_object_object_add(jobj, "turnoPlayer", json_object_new_string(turnoPlayer));
                     const char *json_str = json_object_to_json_string(jobj);
-                    char *messaggioJSON = strdup(json_str); // Copia la stringa JSON per restituirla
-                    json_object_put(jobj); // Dealloca l'oggetto JSON
+                    char *tmp = strdup(json_str); // Copia la stringa JSON per restituirla
+                    int sizeMSG = strlen(tmp) + 2;
+                    char *messaggioJSON = malloc(sizeof(char)*sizeMSG);
+                    strcpy(messaggioJSON,tmp);
                     strcat(messaggioJSON,"\n");
 
                     send_evento_partecipanti_match(messaggioJSON,indexPartita);
@@ -761,8 +796,10 @@ char *assegna_turno(int turnoSquadraAttuale, int indexPartita, int *indiceTurnoA
                     json_object_object_add(jobj, "tipoEvento", json_object_new_string("assegnazioneTurno"));
                     json_object_object_add(jobj, "turnoPlayer", json_object_new_string(turnoPlayer));
                     const char *json_str = json_object_to_json_string(jobj);
-                    char *messaggioJSON = strdup(json_str); // Copia la stringa JSON per restituirla
-                    json_object_put(jobj); // Dealloca l'oggetto JSON
+                    char *tmp = strdup(json_str); // Copia la stringa JSON per restituirla
+                    int sizeMSG = strlen(tmp) + 2;
+                    char *messaggioJSON = malloc(sizeof(char)*sizeMSG);
+                    strcpy(messaggioJSON,tmp);
                     strcat(messaggioJSON,"\n");
 
                     send_evento_partecipanti_match(messaggioJSON,indexPartita);
@@ -784,8 +821,10 @@ char *assegna_turno(int turnoSquadraAttuale, int indexPartita, int *indiceTurnoA
                     json_object_object_add(jobj, "turnoPlayer", json_object_new_string(turnoPlayer));
                     const char *json_str = json_object_to_json_string(jobj);
 
-                    char *messaggioJSON = strdup(json_str); // Copia la stringa JSON per restituirla
-                    json_object_put(jobj); // Dealloca l'oggetto JSON
+                    char *tmp = strdup(json_str); // Copia la stringa JSON per restituirla
+                    int sizeMSG = strlen(tmp) + 2;
+                    char *messaggioJSON = malloc(sizeof(char)*sizeMSG);
+                    strcpy(messaggioJSON,tmp);
                     strcat(messaggioJSON,"\n");
 
                     send_evento_partecipanti_match(messaggioJSON,indexPartita);
@@ -938,7 +977,9 @@ void simula_match(int indexPartita){
             while(match->finePartita != 1){
 
                 pthread_mutex_lock(&mutexPartite);
+                printf("Test prima dell'assegnazione turno\n");
                 char *turnoPlayer = assegna_turno(turnoSquadra,indexPartita,&indiceTurnoA,&indiceTurnoB);
+                printf("Test dopo l'assegnazione turno\n");
                 pthread_mutex_unlock(&mutexPartite);
 
                 if(turnoSquadra == 0) turnoSquadra = 1;
@@ -981,8 +1022,10 @@ void simula_match(int indexPartita){
             json_object_object_add(jobj, "tipoEvento", json_object_new_string("fineMatch"));
             const char *json_str = json_object_to_json_string(jobj);
 
-            char *messaggioJSON = strdup(json_str); // Copia la stringa JSON per restituirla
-            json_object_put(jobj); // Dealloca l'oggetto JSON
+            char *tmp = strdup(json_str); // Copia la stringa JSON per restituirla
+            int sizeMSG = strlen(tmp) + 2;
+            char *messaggioJSON = malloc(sizeof(char)*sizeMSG);
+            strcpy(messaggioJSON,tmp);
             strcat(messaggioJSON,"\n");
 
             send_evento_partecipanti_match(messaggioJSON,indexPartita);
@@ -1041,9 +1084,10 @@ void assegna_turno_iniziale_e_avvia_match(char *messaggio){
                 json_object_object_add(jobj, "playerInizioTurno", json_object_new_string(playerInizioTurno));
                 const char *json_str = json_object_to_json_string(jobj);
 
-                char *messaggioJSON = strdup(json_str); // Copia la stringa JSON per restituirla
-                if(jobj != NULL)
-                    json_object_put(jobj); // Dealloca l'oggetto JSON
+                char *tmp = strdup(json_str); // Copia la stringa JSON per restituirla
+                int sizeMSG = strlen(tmp) + 2;
+                char *messaggioJSON = malloc(sizeof(char)*sizeMSG);
+                strcpy(messaggioJSON,tmp);
                 strcat(messaggioJSON,"\n");
 
                 send_evento_partecipanti_match(messaggioJSON,indexPartita);
