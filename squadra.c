@@ -186,10 +186,13 @@ char *serializza_oggetto_info_match(int indexPartita){
 
     // Serializza l'oggetto JSON in una stringa
     char *json_string = json_object_to_json_string(root);
+    int dimJson = strlen(json_string);
+    char *infoMatch = malloc(sizeof(char)*dimJson + 2);
+    strcpy(infoMatch,json_string);
     char delimitatore[] = "\n";
-    strcat(json_string,delimitatore);
+    strcat(infoMatch,delimitatore);
 
-    return json_string;
+    return infoMatch;
 }
 
 void avvisa_players_stato_match(int indexPartita, char *messaggio){

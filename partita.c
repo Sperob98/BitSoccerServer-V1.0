@@ -8,6 +8,8 @@
 #include <pthread.h>
 #include <string.h>
 
+static int numeroInfortuni = 0;
+
 ////////////////////////////////////Funzioni interne////////////////////////////////////////////////////////
 
 void send_evento_partecipanti_match(char *messaggio, int indexPartita){
@@ -190,19 +192,22 @@ void *avvia_timer(void *arg){
 
 int get_evento(){
 
-    int evento;
+    int evento = -1;
 
-    //Numero tra 0 e 99
-    int random_number = rand() % 100; // Numero tra 0 e 99
+    while(evento == -1){
 
-    //Simula una probabilità del 40% per l'evento tiro
-    if(random_number < 40) evento = 0;
+        //Numero tra 0 e 99
+        int random_number = rand() % 100; // Numero tra 0 e 99
 
-    //Simula una probabilità del 50% per l'evento dribbling
-    else if(random_number < 90) evento = 1;
+        //Simula una probabilità del 40% per l'evento tiro
+        if(random_number < 40) evento = 0;
 
-    //Simula una probabilità del 10% per l'evento infortunio
-    else evento = 2;
+        //Simula una probabilità del 50% per l'evento dribbling
+        else if(random_number < 90) evento = 1;
+
+        //Simula una probabilità del 10% per l'evento infortunio
+        else if (numeroInfortuni <= 3 ) evento = 2;
+    }
 
     return evento;
 
@@ -490,6 +495,8 @@ void *penalizzazione(void *infoThread){
 
 void *infortunio(void *infoThread){
 
+    numeroInfortuni++;
+
     //Esrazione parametri thread
     argomentiThreadInfortunio *arg = (argomentiThreadInfortunio*) infoThread;
     int indexPartita = arg->indexPartita;
@@ -702,6 +709,8 @@ void *infortunio(void *infoThread){
     pthread_join(thread,&status);
 
     printf("Thread penalizzazione terminato con stato: %ld\n",(long)status);
+
+    numeroInfortuni--;
 }
 
 char *assegna_turno(int turnoSquadraAttuale, int indexPartita, int *indiceTurnoA,int *indiceTurnoB){
