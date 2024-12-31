@@ -77,6 +77,7 @@ void gestione_disconessione_client(int socket_disconessa){
                         if(squadreInCostruzione[indexSquadra]->players[k] == playersConnessi[indexPlayer]){
 
                             squadreInCostruzione[indexSquadra]->players[k] = NULL;
+                            squadreInCostruzione[indexSquadra]->numeroPlayers--;
                             trovato = 1;
                             printf("Rimossa partecipazione di %s alla squadra %s per disconessione\n", playersConnessi[indexPlayer]->nome_player,squadreInCostruzione[indexSquadra]->nome_squadra);
                             break;
@@ -113,11 +114,62 @@ void gestione_disconessione_client(int socket_disconessa){
 
         }else if(trovato == 1){
 
+            if(controlla_squadra_isPronta(indexSquadra) == 1){
+
+                squadreInCostruzione[indexSquadra]->isPronto = 0;
+
+                send_cambioStatoMatch_to_partecipanti_match("squadraNonPronta\n\0",indexSquadra);
+
+            }
+
             send_aggiornamento_composizione_squadra(squadreInCostruzione[indexSquadra]->nome_squadra);
         }
 
         //Libera username
         free(playersConnessi[indexPlayer]);
         playersConnessi[indexPlayer] = NULL;
+    }
+}
+
+int controlla_squadra_isPronta(int indexSquadra){
+
+    if(indexSquadra>=0 && indexSquadra<SIZE_ARRAY_TEAMS){
+
+        if(squadreInCostruzione[indexSquadra]!=NULL){
+
+            if(squadreInCostruzione[indexSquadra]->isPronto == 1){
+
+                return 1;
+            }
+        }
+    }
+
+    return 0;
+}
+
+void send_cambioStatoMatch_to_partecipanti_match(char *messaggio, int indexSquadra){
+
+    if( (indexSquadra >= 0) && (indexSquadra < SIZE_ARRAY_TEAMS) ){
+
+        if( squadreInCostruzione[indexSquadra] != NULL ){
+
+            squadra *squadraPronta = squadreInCostruzione[indexSquadra];
+
+            int sockCapitano = squadraPronta->capitano->socket;
+
+            send(sockCapitano,messaggio,strlen(messaggio),0);
+
+            for(int i=0; i<SIZE_ARRAY_PLAYER_PARTECIPANTI; i++){
+
+                if(squadraPronta->players[i] != NULL){
+
+                    int sockPlayer = squadraPronta->players[i]->socket;
+
+                    send(sockPlayer,messaggio,strlen(messaggio),0);
+
+                }
+
+            }
+        }
     }
 }

@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1734791960 source:/home/rob/Desktop/BitSoccerSimuatorServer-V1.0/gestioneConnessioni.c
+1735658122 source:/home/rob/Desktop/BitSoccerSimuatorServer-V1.0/gestioneConnessioni.c
 	"gestioneConnessioni.h"
 	"variabiliGlobali.h"
 	"squadra.h"
@@ -22,7 +22,7 @@
 1734711146 /home/rob/Desktop/BitSoccerSimuatorServer-V1.0/partita.h
 	"squadra.h"
 
-1734789444 source:/home/rob/Desktop/BitSoccerSimuatorServer-V1.0/main.c
+1735666104 source:/home/rob/Desktop/BitSoccerSimuatorServer-V1.0/main.c
 	<json-c/json.h>
 	<stdio.h>
 	<stdlib.h>
@@ -48,7 +48,7 @@
 	<unistd.h>
 	<json-c/json.h>
 
-1734792617 source:/home/rob/Desktop/BitSoccerSimuatorServer-V1.0/squadra.c
+1735660907 source:/home/rob/Desktop/BitSoccerSimuatorServer-V1.0/squadra.c
 	"squadra.h"
 	"variabiliGlobali.h"
 	<pthread.h>
@@ -59,7 +59,7 @@
 	<unistd.h>
 	<json-c/json.h>
 
-1735569907 source:/home/rob/Desktop/BitSoccerSimuatorServer-V1.0/partita.c
+1735663719 source:/home/rob/Desktop/BitSoccerSimuatorServer-V1.0/partita.c
 	"partita.h"
 	"variabiliGlobali.h"
 	"player.h"

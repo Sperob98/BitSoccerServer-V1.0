@@ -12,6 +12,57 @@ static int numeroInfortuni = 0;
 
 ////////////////////////////////////Funzioni interne////////////////////////////////////////////////////////
 
+void tutti_partecipanti_sono_conessi(int indexPartita){
+
+    int annullaPartita = 0;
+
+    if( (indexPartita>=0) && (indexPartita<SIZE_ARRAY_PARTITE) ){
+
+        if(partite[indexPartita] != NULL){
+
+            partita *match = partite[indexPartita];
+
+            if(match->squadra_A == NULL || match->squadra_B == NULL){
+
+
+                annullaPartita = 1;
+            }
+
+            if(match->squadra_A->capitano == NULL || match->squadra_B->capitano == NULL){
+
+                annullaPartita = 1;
+            }
+
+            for(int i=0; i<SIZE_ARRAY_PLAYER_PARTECIPANTI; i++){
+
+                if(match->squadra_A->players[i] == NULL || match->squadra_B->players[i] == NULL){
+
+                    annullaPartita = 1;
+                }
+            }
+        }
+    }
+
+    if(annullaPartita == 1){
+
+        //Costruisci messaggio
+        json_object *jobj = json_object_new_object();
+        json_object_object_add(jobj, "tipoEvento", json_object_new_string("annullamentoMatch"));
+
+
+        const char *json_str = json_object_to_json_string(jobj);
+        char *tmp = strdup(json_str); // Copia la stringa JSON per restituirla
+        int sizeMSG = strlen(tmp) + 2;
+        char *messaggioJSON = malloc(sizeof(char)*sizeMSG);
+        strcpy(messaggioJSON,tmp);
+        strcat(messaggioJSON,"\n");
+
+        send_evento_partecipanti_match(messaggioJSON,indexPartita);
+
+        exit(2);
+    }
+}
+
 void send_evento_partecipanti_match(char *messaggio, int indexPartita){
 
     if( (indexPartita >= 0) && (indexPartita < SIZE_ARRAY_PARTITE) ){
@@ -1076,6 +1127,8 @@ void assegna_turno_iniziale_e_avvia_match(char *messaggio){
     int indexPartita = json_object_get_int(indexPartitaJSON);
     char *playerInizioTurno = json_object_get_string(playerInizioTurnoJSON);
     char *squadraInizioTurno = json_object_get_string(squadraInizioTurnoJSON);
+
+    tutti_partecipanti_sono_conessi(indexPartita);
 
     if( (indexPartita >= 0) && (indexPartita < SIZE_ARRAY_PARTITE)){
 

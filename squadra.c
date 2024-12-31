@@ -441,7 +441,7 @@ void *thread_send_lista_squadre_client(void* client_socket){
             send(client, "AggiornamentoSquadra\n", strlen("AggiornamentoSquadra\n"), 0);
             send(client, buffer, strlen(buffer), 0);
 
-            if(indexPlayer < 50)
+            if( (indexPlayer < 50) && (playersConnessi[indexPlayer] != NULL) )
                 printf("Lista squadre: %s inviato al player: %s\n",json__arraySquadre_str,playersConnessi[indexPlayer]->nome_player);
         }
 

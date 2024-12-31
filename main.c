@@ -55,6 +55,8 @@ void *gestione_richieste_client(void *arg){
                     pthread_mutex_unlock(&mutexPlayers);
                     pthread_mutex_unlock(&mutexListaSquadre);
 
+                    pthread_cond_broadcast(&condListaSquadre);
+
                     pthread_exit(NULL);
                 }
             }
@@ -159,6 +161,8 @@ void *gestione_richieste_client(void *arg){
                 pthread_mutex_unlock(&mutexListaSquadre);
                 pthread_mutex_unlock(&mutexPlayers);
                 pthread_mutex_unlock(&mutexPartite);
+
+                pthread_cond_broadcast(&condListaSquadre);
 
             }else if(strcmp(tipoRIchiesta,"inizioTurno")==0){
 
