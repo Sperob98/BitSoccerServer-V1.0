@@ -12,7 +12,9 @@ static int numeroInfortuni = 0;
 
 ////////////////////////////////////Funzioni interne////////////////////////////////////////////////////////
 
-int tutti_partecipanti_sono_conessi(int indexPartita){
+int annulla_match(int indexPartita){
+
+printf("Sono nella funzione\n");
 
     int annullaPartita = 0;
 
@@ -44,7 +46,7 @@ int tutti_partecipanti_sono_conessi(int indexPartita){
     }
 
     if(annullaPartita == 1){
-
+printf("Sono 1\n");
         //Costruisci messaggio
         json_object *jobj = json_object_new_object();
         json_object_object_add(jobj, "tipoEvento", json_object_new_string("annullamentoMatch"));
@@ -74,19 +76,44 @@ void send_evento_partecipanti_match(char *messaggio, int indexPartita){
 
             partita *match = partite[indexPartita];
 
-            int sockCapitanoA = match->squadra_A->capitano->socket;
-            int sockCapitanoB = match->squadra_B->capitano->socket;
+            int sockCapitanoA = -1;
+            int sockCapitanoB = -1;
 
-            send(sockCapitanoA,messaggio,strlen(messaggio),0);
-            send(sockCapitanoB,messaggio,strlen(messaggio),0);
+            if(match->squadra_A->capitano != NULL)
+                sockCapitanoA = match->squadra_A->capitano->socket;
+            else
+                sockCapitanoA = -1;
+
+            if(match->squadra_B->capitano != NULL)
+                sockCapitanoB = match->squadra_B->capitano->socket;
+            else
+                sockCapitanoB = -1;
+
+            if(sockCapitanoA >= 0)
+                send(sockCapitanoA,messaggio,strlen(messaggio),0);
+            if(sockCapitanoB >= 0)
+                send(sockCapitanoB,messaggio,strlen(messaggio),0);
+
+            int socketPlayerA = -1;
+            int socketPlayerB = -1;
 
             for(int i=0; i<SIZE_ARRAY_PLAYER_PARTECIPANTI; i++){
 
-                int sockPlayerA = match->squadra_A->players[i]->socket;
-                int sockPlayerB = match->squadra_B->players[i]->socket;
+                if(match->squadra_A->players[i] != NULL)
+                    socketPlayerA = match->squadra_A->players[i]->socket;
+                else
+                    socketPlayerA = -1;
 
-                send(sockPlayerA,messaggio,strlen(messaggio),0);
-                send(sockPlayerB,messaggio,strlen(messaggio),0);
+                if(match->squadra_B->players[i] != NULL)
+                    socketPlayerB = match->squadra_B->players[i]->socket;
+                else
+                    socketPlayerB = -1;
+
+                if(socketPlayerA >= 0)
+                    send(socketPlayerA,messaggio,strlen(messaggio),0);
+
+                if(socketPlayerB >= 0)
+                    send(socketPlayerB,messaggio,strlen(messaggio),0);
 
             }
         }
@@ -1129,7 +1156,7 @@ void assegna_turno_iniziale_e_avvia_match(char *messaggio){
     char *playerInizioTurno = json_object_get_string(playerInizioTurnoJSON);
     char *squadraInizioTurno = json_object_get_string(squadraInizioTurnoJSON);
 
-    if(tutti_partecipanti_sono_conessi(indexPartita) == 1){
+    if(annulla_match(indexPartita) == 1){
 
         return;
     }

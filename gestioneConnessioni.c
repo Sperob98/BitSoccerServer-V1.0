@@ -125,6 +125,8 @@ void gestione_disconessione_client(int socket_disconessa){
             send_aggiornamento_composizione_squadra(squadreInCostruzione[indexSquadra]->nome_squadra);
         }
 
+        controlla_player_appartiene_match(indexPlayer);
+
         //Libera username
         free(playersConnessi[indexPlayer]);
         playersConnessi[indexPlayer] = NULL;
@@ -172,6 +174,63 @@ void send_cambioStatoMatch_to_partecipanti_match(char *messaggio, int indexSquad
 
                 }
 
+            }
+        }
+    }
+}
+
+void controlla_player_appartiene_match(int indexPlayer){
+
+    for(int i=0; i<SIZE_ARRAY_PARTITE; i++){
+
+        if(partite[i] != NULL){
+
+            squadra *squadraA = partite[i]->squadra_A;
+            squadra *squadraB = partite[i]->squadra_B;
+
+            if(squadraA != NULL && squadraB != NULL){
+
+                if(squadraA->capitano == playersConnessi[indexPlayer]){
+
+                    squadraA->capitano = NULL;
+
+                    printf("Il player disconesso era in un corso di un match\n");
+
+                    return;
+                }
+
+                if(squadraB->capitano == playersConnessi[indexPlayer]){
+
+                    squadraB->capitano = NULL;
+
+                    printf("Il player disconesso era in un corso di un match\n");
+
+                    return;
+                }
+
+                for(int j=0; j<SIZE_ARRAY_PLAYER_PARTECIPANTI; j++){
+
+                    if(squadraA->players[j] != NULL && squadraB->players[j] != NULL){
+
+                        if(squadraA->players[j] == playersConnessi[indexPlayer]){
+
+                            squadraA->players[j] = NULL;
+
+                            printf("Il player disconesso era in un corso di un match\n");
+
+                            return;
+                        }
+
+                        if(squadraB->players[j] == playersConnessi[indexPlayer]){
+
+                            squadraB->players[j] = NULL;
+
+                            printf("Il player disconesso era in un corso di un match\n");
+
+                            return;
+                        }
+                    }
+                }
             }
         }
     }
