@@ -12,7 +12,7 @@ static int numeroInfortuni = 0;
 
 ////////////////////////////////////Funzioni interne////////////////////////////////////////////////////////
 
-void tutti_partecipanti_sono_conessi(int indexPartita){
+int tutti_partecipanti_sono_conessi(int indexPartita){
 
     int annullaPartita = 0;
 
@@ -59,8 +59,11 @@ void tutti_partecipanti_sono_conessi(int indexPartita){
 
         send_evento_partecipanti_match(messaggioJSON,indexPartita);
 
-        exit(2);
+        printf("Annullamento match per disconnessione client\n");
+
     }
+
+    return annullaPartita;
 }
 
 void send_evento_partecipanti_match(char *messaggio, int indexPartita){
@@ -1037,9 +1040,7 @@ void simula_match(int indexPartita){
             while(match->finePartita != 1){
 
                 pthread_mutex_lock(&mutexPartite);
-                printf("Test prima dell'assegnazione turno\n");
                 char *turnoPlayer = assegna_turno(turnoSquadra,indexPartita,&indiceTurnoA,&indiceTurnoB);
-                printf("Test dopo l'assegnazione turno\n");
                 pthread_mutex_unlock(&mutexPartite);
 
                 if(turnoSquadra == 0) turnoSquadra = 1;
@@ -1128,7 +1129,10 @@ void assegna_turno_iniziale_e_avvia_match(char *messaggio){
     char *playerInizioTurno = json_object_get_string(playerInizioTurnoJSON);
     char *squadraInizioTurno = json_object_get_string(squadraInizioTurnoJSON);
 
-    tutti_partecipanti_sono_conessi(indexPartita);
+    if(tutti_partecipanti_sono_conessi(indexPartita) == 1){
+
+        return;
+    }
 
     if( (indexPartita >= 0) && (indexPartita < SIZE_ARRAY_PARTITE)){
 

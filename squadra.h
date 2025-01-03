@@ -22,7 +22,9 @@ typedef struct{
 
 int aggiungi_nuova_squadra(char *messaggio, int client_socket);
 
-void *thread_send_lista_squadre_client(void* client_socket);
+void send_lista_squadre_clients();
+
+void send_lista_squadre_client(int client);
 
 void aggiungi_richiesta_partecipazione_squadra(char *messaggio, int client_socket);
 

@@ -52,10 +52,10 @@ void *gestione_richieste_client(void *arg){
 
                     gestione_disconessione_client(client_sock);
 
+                    send_lista_squadre_clients();
+
                     pthread_mutex_unlock(&mutexPlayers);
                     pthread_mutex_unlock(&mutexListaSquadre);
-
-                    pthread_cond_broadcast(&condListaSquadre);
 
                     pthread_exit(NULL);
                 }
@@ -90,29 +90,22 @@ void *gestione_richieste_client(void *arg){
                 pthread_mutex_unlock(&mutexPlayers);
                 pthread_mutex_unlock(&mutexListaSquadre);
 
-                //Sveglia il thread per l'aggiornamento delle nuove squadre
-                if(stato == 1){
-
-                    pthread_cond_broadcast(&condListaSquadre);
-                    printf("Avvertiti i client della nuova squadra fondata\n");
-
-                }
+                send_lista_squadre_clients();
 
             }else if(strcmp(tipoRIchiesta,"getSquadreInCostruzione")==0){
 
                 printf("Richiesta dell' array delle squadre fondate\n");
 
-                //Parametro per la creazione del nuvo thread
-                int *sock_client_arg = malloc(sizeof(int));
-                if(sock_client_arg != NULL){
+                //Mutua escusione
+                pthread_mutex_lock(&mutexPlayers);
+                pthread_mutex_lock(&mutexListaSquadre);
 
-                    *sock_client_arg = client_sock;
-                    pthread_t newThread;
-                    if(pthread_create(&newThread,NULL,thread_send_lista_squadre_client,(void*)sock_client_arg) < 0){
+                send_lista_squadre_client(client_sock);
 
-                        printf("Errore creazione thread_send_lista_squadre_client\n");
-                    }
-                }
+                //Rilascia mutex dei players e delle squadre
+                pthread_mutex_unlock(&mutexPlayers);
+                pthread_mutex_unlock(&mutexListaSquadre);
+
             }else if(strcmp(tipoRIchiesta,"partecipazioneSquadra")==0){
 
                 printf("Richiesta di parcetipazione a una squadra\n");
@@ -141,8 +134,8 @@ void *gestione_richieste_client(void *arg){
                 pthread_mutex_unlock(&mutexListaSquadre);
                 pthread_mutex_unlock(&mutexPlayers);
 
-                //Sveglia il thread aggiornamenti squadre per aggiornare il numero di partecipanti
-                pthread_cond_broadcast(&condListaSquadre);
+                //invia squadre per aggiornare il numero di partecipanti
+                send_lista_squadre_clients();
                 printf("Avvertiti i client di eventuali aggiornamento del numero di partecianti\n");
 
             }else if(strcmp(tipoRIchiesta,"cercaMatch")==0){
@@ -162,7 +155,7 @@ void *gestione_richieste_client(void *arg){
                 pthread_mutex_unlock(&mutexPlayers);
                 pthread_mutex_unlock(&mutexPartite);
 
-                pthread_cond_broadcast(&condListaSquadre);
+                send_lista_squadre_clients();
 
             }else if(strcmp(tipoRIchiesta,"inizioTurno")==0){
 
@@ -219,8 +212,6 @@ void *gestione_richieste_client(void *arg){
 
                                 }*/
 
-                                free(match);
-                                partite[indexPartita] = NULL;
                             }
 
                         }else{

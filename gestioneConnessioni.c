@@ -155,9 +155,12 @@ void send_cambioStatoMatch_to_partecipanti_match(char *messaggio, int indexSquad
 
             squadra *squadraPronta = squadreInCostruzione[indexSquadra];
 
-            int sockCapitano = squadraPronta->capitano->socket;
+            if(squadraPronta->capitano != NULL){
 
-            send(sockCapitano,messaggio,strlen(messaggio),0);
+                int sockCapitano = squadraPronta->capitano->socket;
+
+                send(sockCapitano,messaggio,strlen(messaggio),0);
+            }
 
             for(int i=0; i<SIZE_ARRAY_PLAYER_PARTECIPANTI; i++){
 

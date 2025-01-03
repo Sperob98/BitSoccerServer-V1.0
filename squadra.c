@@ -401,14 +401,33 @@ int aggiungi_nuova_squadra(char *messaggio, int client_socket){
     return statoDiCreazione;
 }
 
-void *thread_send_lista_squadre_client(void* client_socket){
 
-    printf("Nuovo thread(invio lista squadre) creato\n");
+void send_lista_squadre_clients(){
 
-    int client = *(int*)client_socket;
-    char msg_daInviare[1024];
-    int bytes_read;
-    int aggiornamentoLista = 1;
+    for(int i=0; i<SIZE_ARRAY_PLAYERS; i++){
+
+        if(playersConnessi[i] != NULL){
+
+            int client = playersConnessi[i]->socket;
+
+            //Costrunzione array json dellle squadre fondate
+            char *json__arraySquadre_str = serializza_array_squadre();
+
+            if(json__arraySquadre_str != NULL){
+
+                //Invio lista squadre
+                char buffer[8192];
+                snprintf(buffer, sizeof(buffer), "%s\n", json__arraySquadre_str);
+                send(client, "AggiornamentoSquadra\n", strlen("AggiornamentoSquadra\n"), 0);
+                send(client, buffer, strlen(buffer), 0);
+
+                printf("Lista squadre: %s inviato al player: %s\n",json__arraySquadre_str,playersConnessi[i]->nome_player);
+            }
+        }
+    }
+}
+
+void send_lista_squadre_client(int client){
 
     //Ricerca del player a cui è associato la socket
     int indexPlayer = 0;
@@ -420,34 +439,19 @@ void *thread_send_lista_squadre_client(void* client_socket){
         }
     }
 
-    while(1){
+    //Costrunzione array json dellle squadre fondate
+    char *json__arraySquadre_str = serializza_array_squadre();
 
-        pthread_mutex_lock(&mutexListaSquadre);
-        //Mette in pausa il thread finché non è richiesto di aggiornare la lista squadre
-        while(aggiornamentoLista == 0){
+    if(json__arraySquadre_str != NULL){
 
-            pthread_cond_wait(&condListaSquadre,&mutexListaSquadre);
-            aggiornamentoLista = 1;
-        }
+        //Invio lista squadre
+        char buffer[8192];
+        snprintf(buffer, sizeof(buffer), "%s\n", json__arraySquadre_str);
+        send(client, "AggiornamentoSquadra\n", strlen("AggiornamentoSquadra\n"), 0);
+        send(client, buffer, strlen(buffer), 0);
 
-        //Costrunzione array json dellle squadre fondate
-        char *json__arraySquadre_str = serializza_array_squadre();
-
-        if(json__arraySquadre_str != NULL){
-
-            //Invio lista squadre
-            char buffer[8192];
-            snprintf(buffer, sizeof(buffer), "%s\n", json__arraySquadre_str);
-            send(client, "AggiornamentoSquadra\n", strlen("AggiornamentoSquadra\n"), 0);
-            send(client, buffer, strlen(buffer), 0);
-
-            if( (indexPlayer < 50) && (playersConnessi[indexPlayer] != NULL) )
-                printf("Lista squadre: %s inviato al player: %s\n",json__arraySquadre_str,playersConnessi[indexPlayer]->nome_player);
-        }
-
-        aggiornamentoLista = 0;
-
-        pthread_mutex_unlock(&mutexListaSquadre);
+        if(playersConnessi[indexPlayer] != NULL)
+            printf("Lista squadre: %s inviato al player: %s\n",json__arraySquadre_str,playersConnessi[indexPlayer]->nome_player);
     }
 }
 
