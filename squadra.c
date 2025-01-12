@@ -80,7 +80,8 @@ char *serializza_oggetto_composizione_squadre(int indexSquadra){
         json_object_object_add(root, "accettati", json_array_accettati);
 
         // Serializza l'oggetto JSON in una stringa
-        char *json_string = json_object_to_json_string(root);
+        char *json_string = malloc(sizeof(char)*strlen(json_object_to_json_string(root))+2);
+        strcpy(json_string,json_object_to_json_string(root));
         strcat(json_string,"\n");
 
         return json_string;
@@ -185,7 +186,7 @@ char *serializza_oggetto_info_match(int indexPartita){
     json_object_object_add(root, "indexPartita", json_indexPartita);
 
     // Serializza l'oggetto JSON in una stringa
-    char *json_string = json_object_to_json_string(root);
+    const char *json_string = json_object_to_json_string(root);
     int dimJson = strlen(json_string);
     char *infoMatch = malloc(sizeof(char)*dimJson + 2);
     strcpy(infoMatch,json_string);
@@ -254,7 +255,7 @@ void avvisa_players_stato_match(int indexPartita, char *messaggio){
         json_object *nomeSquadraJSON;
 
         json_object_object_get_ex(parsed_json, "squadra", &nomeSquadraJSON);
-        char *nomeSquadra = json_object_get_string(nomeSquadraJSON);
+        const char *nomeSquadra = json_object_get_string(nomeSquadraJSON);
 
         //Cerca squadra nell'array
         int i;
@@ -509,7 +510,9 @@ void aggiungi_richiesta_partecipazione_squadra(char *messaggio, int client_socke
                     send(client_socket, "ok\n", strlen("ok\n"), 0);
 
                     //Aggiorna la nuova composizione della squadra a tutto lo spogliatoio
-                    send_aggiornamento_composizione_squadra(json_object_get_string(squadraJSON));
+                    char *squadraString = malloc(sizeof(char)*strlen(json_object_get_string(squadraJSON)));
+                    strcpy(squadraString,json_object_get_string(squadraJSON));
+                    send_aggiornamento_composizione_squadra(squadraString);
 
                     return;
                 }
@@ -621,7 +624,9 @@ void aggiornamento_composizione_squadra(char *messaggio){
         }
 
         //Avverti i client della squadra dell'aggiornamento
-        send_aggiornamento_composizione_squadra(json_object_get_string(nomeSquadraJSON));
+        char *nomeSquadraString = malloc(sizeof(char)*strlen(json_object_get_string(nomeSquadraJSON)));
+        strcpy(nomeSquadraString,json_object_get_string(nomeSquadraJSON));
+        send_aggiornamento_composizione_squadra(nomeSquadraString);
     }
 }
 
@@ -637,7 +642,7 @@ void cerca_squadra_match(char *messaggio,int sockCapitano){
 
     if(json_object_get_string(nomeSquadraJSON) != NULL){
 
-        char *nomesquadra = json_object_get_string(nomeSquadraJSON);
+        const char *nomesquadra = json_object_get_string(nomeSquadraJSON);
 
         //Cerca l'indice della squadra che ha chiesto il match nell'array delle squadreInCostruzione
         int indexSquadraCheHaChiestoIlMatch;

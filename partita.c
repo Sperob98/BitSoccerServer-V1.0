@@ -4,13 +4,67 @@
 #include <json-c/json.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
 #include <time.h>
 #include <pthread.h>
 #include <string.h>
+#include <sys/socket.h>
 
 static int numeroInfortuni = 0;
 
 ////////////////////////////////////Funzioni interne////////////////////////////////////////////////////////
+
+void send_evento_partecipanti_match(char *messaggio, int indexPartita){
+
+    if( (indexPartita >= 0) && (indexPartita < SIZE_ARRAY_PARTITE) ){
+
+        if( partite[indexPartita] != NULL ){
+
+            partita *match = partite[indexPartita];
+
+            int sockCapitanoA = -1;
+            int sockCapitanoB = -1;
+
+            if(match->squadra_A->capitano != NULL)
+                sockCapitanoA = match->squadra_A->capitano->socket;
+            else
+                sockCapitanoA = -1;
+
+            if(match->squadra_B->capitano != NULL)
+                sockCapitanoB = match->squadra_B->capitano->socket;
+            else
+                sockCapitanoB = -1;
+
+            if(sockCapitanoA >= 0)
+                send(sockCapitanoA,messaggio,strlen(messaggio),0);
+            if(sockCapitanoB >= 0)
+                send(sockCapitanoB,messaggio,strlen(messaggio),0);
+
+            int socketPlayerA = -1;
+            int socketPlayerB = -1;
+
+            for(int i=0; i<SIZE_ARRAY_PLAYER_PARTECIPANTI; i++){
+
+                if(match->squadra_A->players[i] != NULL)
+                    socketPlayerA = match->squadra_A->players[i]->socket;
+                else
+                    socketPlayerA = -1;
+
+                if(match->squadra_B->players[i] != NULL)
+                    socketPlayerB = match->squadra_B->players[i]->socket;
+                else
+                    socketPlayerB = -1;
+
+                if(socketPlayerA >= 0)
+                    send(socketPlayerA,messaggio,strlen(messaggio),0);
+
+                if(socketPlayerB >= 0)
+                    send(socketPlayerB,messaggio,strlen(messaggio),0);
+
+            }
+        }
+    }
+}
 
 int annulla_match(int indexPartita){
 
@@ -66,58 +120,6 @@ printf("Sono 1\n");
     }
 
     return annullaPartita;
-}
-
-void send_evento_partecipanti_match(char *messaggio, int indexPartita){
-
-    if( (indexPartita >= 0) && (indexPartita < SIZE_ARRAY_PARTITE) ){
-
-        if( partite[indexPartita] != NULL ){
-
-            partita *match = partite[indexPartita];
-
-            int sockCapitanoA = -1;
-            int sockCapitanoB = -1;
-
-            if(match->squadra_A->capitano != NULL)
-                sockCapitanoA = match->squadra_A->capitano->socket;
-            else
-                sockCapitanoA = -1;
-
-            if(match->squadra_B->capitano != NULL)
-                sockCapitanoB = match->squadra_B->capitano->socket;
-            else
-                sockCapitanoB = -1;
-
-            if(sockCapitanoA >= 0)
-                send(sockCapitanoA,messaggio,strlen(messaggio),0);
-            if(sockCapitanoB >= 0)
-                send(sockCapitanoB,messaggio,strlen(messaggio),0);
-
-            int socketPlayerA = -1;
-            int socketPlayerB = -1;
-
-            for(int i=0; i<SIZE_ARRAY_PLAYER_PARTECIPANTI; i++){
-
-                if(match->squadra_A->players[i] != NULL)
-                    socketPlayerA = match->squadra_A->players[i]->socket;
-                else
-                    socketPlayerA = -1;
-
-                if(match->squadra_B->players[i] != NULL)
-                    socketPlayerB = match->squadra_B->players[i]->socket;
-                else
-                    socketPlayerB = -1;
-
-                if(socketPlayerA >= 0)
-                    send(socketPlayerA,messaggio,strlen(messaggio),0);
-
-                if(socketPlayerB >= 0)
-                    send(socketPlayerB,messaggio,strlen(messaggio),0);
-
-            }
-        }
-    }
 }
 
 int get_squadra_from_player(char *player, int indexPartita){
@@ -269,6 +271,8 @@ void *avvia_timer(void *arg){
             match->finePartita = 1;
         }
     }
+
+    return NULL;
 }
 
 int get_evento(){
@@ -572,6 +576,7 @@ void *penalizzazione(void *infoThread){
         }
     }
 
+    return NULL;
 }
 
 void *infortunio(void *infoThread){
@@ -684,7 +689,7 @@ void *infortunio(void *infoThread){
                     infoThreadPenalizzazione->timeP = random_time_p;
                     if (pthread_create(&thread, NULL, penalizzazione, (void*)infoThreadPenalizzazione) != 0) {
 
-                        printf(stderr, "Errore nella creazione del thread infortunio\n");
+                        printf("Errore nella creazione del thread infortunio\n");
                     }
 
                     trovato_player_da_penalizzare = 1;
@@ -709,7 +714,7 @@ void *infortunio(void *infoThread){
                     infoThreadPenalizzazione->timeP = random_time_p;
                     if (pthread_create(&thread, NULL, penalizzazione, (void*)infoThreadPenalizzazione) != 0) {
 
-                        printf(stderr, "Errore nella creazione del thread infortunio\n");
+                        printf("Errore nella creazione del thread infortunio\n");
                     }
 
                     trovato_player_da_penalizzare = 1;
@@ -731,7 +736,7 @@ void *infortunio(void *infoThread){
                     infoThreadPenalizzazione->timeP = random_time_p;
                     if (pthread_create(&thread, NULL, penalizzazione, (void*)infoThreadPenalizzazione) != 0) {
 
-                        printf(stderr, "Errore nella creazione del thread infortunio\n");
+                        printf("Errore nella creazione del thread infortunio\n");
                     }
 
                     trovato_player_da_penalizzare = 1;
@@ -792,6 +797,8 @@ void *infortunio(void *infoThread){
     printf("Thread penalizzazione terminato con stato: %ld\n",(long)status);
 
     numeroInfortuni--;
+
+    return NULL;
 }
 
 char *assegna_turno(int turnoSquadraAttuale, int indexPartita, int *indiceTurnoA,int *indiceTurnoB){
@@ -989,7 +996,6 @@ void simula_match(int indexPartita){
             //--------------------------------Inizia simulazione eventi---------------------------------------------
 
             //Variabili Match
-            int fineMatch = 0;
             int scoreA = 0;
             int scoreB = 0;
             int evento;
@@ -1026,7 +1032,7 @@ void simula_match(int indexPartita){
             //Avvia timer
             if (pthread_create(&newThread, NULL, avvia_timer, (void*)indexPartitaThreadTime) != 0) {
 
-                printf(stderr, "Errore durante la simulazione del match: creazione thread time fallito\n");
+                printf("Errore durante la simulazione del match: creazione thread time fallito\n");
 
                 return;
             }
@@ -1059,7 +1065,7 @@ void simula_match(int indexPartita){
                 // Crea il thread e passa il puntatore alla struct come argomento
                 if (pthread_create(&newThread, NULL, infortunio, (void*)infoThread) != 0) {
 
-                    printf(stderr, "Errore durante la simulazione match: creazione thread infortunio fallito\n");
+                    printf("Errore durante la simulazione match: creazione thread infortunio fallito\n");
                     return;
                 }
             }
@@ -1095,7 +1101,7 @@ void simula_match(int indexPartita){
                     // Crea il thread e passa il puntatore alla struct come argomento
                     if (pthread_create(&thread, NULL, infortunio, (void*)infoThread) != 0) {
 
-                        printf(stderr, "Errore nella creazione del thread infortunio\n");
+                        printf("Errore nella creazione del thread infortunio\n");
                     }
                 }
 
@@ -1153,8 +1159,8 @@ void assegna_turno_iniziale_e_avvia_match(char *messaggio){
     json_object_object_get_ex(parsed_json, "squadra", &squadraInizioTurnoJSON);
 
     int indexPartita = json_object_get_int(indexPartitaJSON);
-    char *playerInizioTurno = json_object_get_string(playerInizioTurnoJSON);
-    char *squadraInizioTurno = json_object_get_string(squadraInizioTurnoJSON);
+    const char *playerInizioTurno = json_object_get_string(playerInizioTurnoJSON);
+    const char *squadraInizioTurno = json_object_get_string(squadraInizioTurnoJSON);
 
     if(annulla_match(indexPartita) == 1){
 

@@ -84,7 +84,7 @@ void *gestione_richieste_client(void *arg){
                 pthread_mutex_lock(&mutexPlayers);
                 pthread_mutex_lock(&mutexListaSquadre);
 
-                int stato = aggiungi_nuova_squadra(client_message, client_sock);
+                aggiungi_nuova_squadra(client_message, client_sock);
 
                 //Rilascia mutex dei players e delle squadre
                 pthread_mutex_unlock(&mutexPlayers);

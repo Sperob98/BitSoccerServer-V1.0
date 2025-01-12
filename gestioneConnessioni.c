@@ -1,6 +1,118 @@
+#include <string.h>
+#include <stdio.h>
+#include <unistd.h>
+#include <sys/socket.h>
+#include <sys/types.h>
 #include "gestioneConnessioni.h"
 #include "variabiliGlobali.h"
 #include "squadra.h"
+
+
+///////////////////////////////////funzioni di ausilio//////////////////////////////////////////////////////////////
+int controlla_squadra_isPronta(int indexSquadra){
+
+    if(indexSquadra>=0 && indexSquadra<SIZE_ARRAY_TEAMS){
+
+        if(squadreInCostruzione[indexSquadra]!=NULL){
+
+            if(squadreInCostruzione[indexSquadra]->isPronto == 1){
+
+                return 1;
+            }
+        }
+    }
+
+    return 0;
+}
+
+void send_cambioStatoMatch_to_partecipanti_match(char *messaggio, int indexSquadra){
+
+    if( (indexSquadra >= 0) && (indexSquadra < SIZE_ARRAY_TEAMS) ){
+
+        if( squadreInCostruzione[indexSquadra] != NULL ){
+
+            squadra *squadraPronta = squadreInCostruzione[indexSquadra];
+
+            if(squadraPronta->capitano != NULL){
+
+                int sockCapitano = squadraPronta->capitano->socket;
+
+                send(sockCapitano,messaggio,strlen(messaggio),0);
+            }
+
+            for(int i=0; i<SIZE_ARRAY_PLAYER_PARTECIPANTI; i++){
+
+                if(squadraPronta->players[i] != NULL){
+
+                    int sockPlayer = squadraPronta->players[i]->socket;
+
+                    send(sockPlayer,messaggio,strlen(messaggio),0);
+
+                }
+
+            }
+        }
+    }
+}
+
+void controlla_player_appartiene_match(int indexPlayer){
+
+    for(int i=0; i<SIZE_ARRAY_PARTITE; i++){
+
+        if(partite[i] != NULL){
+
+            squadra *squadraA = partite[i]->squadra_A;
+            squadra *squadraB = partite[i]->squadra_B;
+
+            if(squadraA != NULL && squadraB != NULL){
+
+                if(squadraA->capitano == playersConnessi[indexPlayer]){
+
+                    squadraA->capitano = NULL;
+
+                    printf("Il player disconesso era in un corso di un match\n");
+
+                    return;
+                }
+
+                if(squadraB->capitano == playersConnessi[indexPlayer]){
+
+                    squadraB->capitano = NULL;
+
+                    printf("Il player disconesso era in un corso di un match\n");
+
+                    return;
+                }
+
+                for(int j=0; j<SIZE_ARRAY_PLAYER_PARTECIPANTI; j++){
+
+                    if(squadraA->players[j] != NULL && squadraB->players[j] != NULL){
+
+                        if(squadraA->players[j] == playersConnessi[indexPlayer]){
+
+                            squadraA->players[j] = NULL;
+
+                            printf("Il player disconesso era in un corso di un match\n");
+
+                            return;
+                        }
+
+                        if(squadraB->players[j] == playersConnessi[indexPlayer]){
+
+                            squadraB->players[j] = NULL;
+
+                            printf("Il player disconesso era in un corso di un match\n");
+
+                            return;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 char *get_tipo_richiesta(char *messaggio){
 
@@ -11,13 +123,15 @@ char *get_tipo_richiesta(char *messaggio){
     if(parsed_json != NULL){
 
         //Estrazione tipo di richiesta
-        struct json_object *tipoRichiesta;
-        json_object_object_get_ex(parsed_json, "tipoRichiesta", &tipoRichiesta);
+        struct json_object *tipoRichiestaJSON;
+        json_object_object_get_ex(parsed_json, "tipoRichiesta", &tipoRichiestaJSON);
 
-        if( (json_object_get_string(tipoRichiesta)) != NULL){
+        if( (json_object_get_string(tipoRichiestaJSON)) != NULL){
 
         //Return stringa della richiesta
-        return json_object_get_string(tipoRichiesta);
+        char *tipoRichiestaString = malloc(sizeof(char)*strlen(json_object_get_string(tipoRichiestaJSON)));
+        strcpy(tipoRichiestaString,json_object_get_string(tipoRichiestaJSON));
+        return tipoRichiestaString;
 
         }
 
@@ -130,108 +244,5 @@ void gestione_disconessione_client(int socket_disconessa){
         //Libera username
         free(playersConnessi[indexPlayer]);
         playersConnessi[indexPlayer] = NULL;
-    }
-}
-
-int controlla_squadra_isPronta(int indexSquadra){
-
-    if(indexSquadra>=0 && indexSquadra<SIZE_ARRAY_TEAMS){
-
-        if(squadreInCostruzione[indexSquadra]!=NULL){
-
-            if(squadreInCostruzione[indexSquadra]->isPronto == 1){
-
-                return 1;
-            }
-        }
-    }
-
-    return 0;
-}
-
-void send_cambioStatoMatch_to_partecipanti_match(char *messaggio, int indexSquadra){
-
-    if( (indexSquadra >= 0) && (indexSquadra < SIZE_ARRAY_TEAMS) ){
-
-        if( squadreInCostruzione[indexSquadra] != NULL ){
-
-            squadra *squadraPronta = squadreInCostruzione[indexSquadra];
-
-            if(squadraPronta->capitano != NULL){
-
-                int sockCapitano = squadraPronta->capitano->socket;
-
-                send(sockCapitano,messaggio,strlen(messaggio),0);
-            }
-
-            for(int i=0; i<SIZE_ARRAY_PLAYER_PARTECIPANTI; i++){
-
-                if(squadraPronta->players[i] != NULL){
-
-                    int sockPlayer = squadraPronta->players[i]->socket;
-
-                    send(sockPlayer,messaggio,strlen(messaggio),0);
-
-                }
-
-            }
-        }
-    }
-}
-
-void controlla_player_appartiene_match(int indexPlayer){
-
-    for(int i=0; i<SIZE_ARRAY_PARTITE; i++){
-
-        if(partite[i] != NULL){
-
-            squadra *squadraA = partite[i]->squadra_A;
-            squadra *squadraB = partite[i]->squadra_B;
-
-            if(squadraA != NULL && squadraB != NULL){
-
-                if(squadraA->capitano == playersConnessi[indexPlayer]){
-
-                    squadraA->capitano = NULL;
-
-                    printf("Il player disconesso era in un corso di un match\n");
-
-                    return;
-                }
-
-                if(squadraB->capitano == playersConnessi[indexPlayer]){
-
-                    squadraB->capitano = NULL;
-
-                    printf("Il player disconesso era in un corso di un match\n");
-
-                    return;
-                }
-
-                for(int j=0; j<SIZE_ARRAY_PLAYER_PARTECIPANTI; j++){
-
-                    if(squadraA->players[j] != NULL && squadraB->players[j] != NULL){
-
-                        if(squadraA->players[j] == playersConnessi[indexPlayer]){
-
-                            squadraA->players[j] = NULL;
-
-                            printf("Il player disconesso era in un corso di un match\n");
-
-                            return;
-                        }
-
-                        if(squadraB->players[j] == playersConnessi[indexPlayer]){
-
-                            squadraB->players[j] = NULL;
-
-                            printf("Il player disconesso era in un corso di un match\n");
-
-                            return;
-                        }
-                    }
-                }
-            }
-        }
     }
 }
