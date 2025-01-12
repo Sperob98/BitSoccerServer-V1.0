@@ -212,6 +212,15 @@ void *gestione_richieste_client(void *arg){
 
                                 }*/
 
+                                if(partite[indexPartita] != NULL){
+
+                                    free(partite[indexPartita]->squadra_A);
+                                    free(partite[indexPartita]->squadra_B);
+                                    free(partite[indexPartita]);
+
+                                    partite[indexPartita] = NULL;
+                                }
+
                             }
 
                         }else{

@@ -19,10 +19,10 @@
 
 1734611525 /home/rob/Desktop/BitSoccerSimuatorServer-V1.0/player.h
 
-1734711146 /home/rob/Desktop/BitSoccerSimuatorServer-V1.0/partita.h
+1736522456 /home/rob/Desktop/BitSoccerSimuatorServer-V1.0/partita.h
 	"squadra.h"
 
-1735864342 source:/home/rob/Desktop/BitSoccerSimuatorServer-V1.0/main.c
+1736522915 source:/home/rob/Desktop/BitSoccerSimuatorServer-V1.0/main.c
 	<json-c/json.h>
 	<stdio.h>
 	<stdlib.h>
@@ -59,7 +59,7 @@
 	<unistd.h>
 	<json-c/json.h>
 
-1735909626 source:/home/rob/Desktop/BitSoccerSimuatorServer-V1.0/partita.c
+1736522474 source:/home/rob/Desktop/BitSoccerSimuatorServer-V1.0/partita.c
 	"partita.h"
 	"variabiliGlobali.h"
 	"player.h"

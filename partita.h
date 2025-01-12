@@ -30,6 +30,7 @@ typedef struct{
 
 }argomentiThreadPenalizzazione;
 
+
 int get_index_partita(char *messaggio);
 
 void assegna_turno_iniziale_e_avvia_match(char *messaggio);
